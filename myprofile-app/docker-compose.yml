@@ -12,7 +12,7 @@ services:
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini:ro
     ports:
       - "9000:9000"   # PHP-FPM
-      - "5137:5137"   # Vite (HMR) - exposto aqui também (opcional)
+      # - "5137:5137" # REMOVIDO: Vite não deve ser exposto aqui
     networks:
       - ets-sistema-network
     depends_on:
@@ -54,7 +54,7 @@ services:
     networks:
       - ets-sistema-network
     ports:
-      - "3306:3306"
+      - "3307:3306"   # recomendado no Windows; evite conflito com MySQL local
     environment:
       MYSQL_DATABASE: myprofile_database
       MYSQL_ROOT_PASSWORD: root
@@ -75,17 +75,17 @@ services:
       sh -lc "if [ -f package-lock.json ]; then npm ci; else npm i; fi;
               npm run dev -- --host 0.0.0.0 --port 5137"
     ports:
-      - "5137:5137"
+      - "5137:5137"   # Vite/HMR no host (como era)
     volumes:
       - ./:/var/www:delegated
-      - vendor_cache:/var/www/vendor              # vê o mesmo vendor do PHP (TallStack UI)
-      - node_modules_cache:/var/www/node_modules  # evita node_modules no host Windows
+      - vendor_cache:/var/www/vendor
+      - node_modules_cache:/var/www/node_modules
     depends_on:
       - php
     networks:
       - ets-sistema-network
     environment:
-      CHOKIDAR_USEPOLLING: "true"   # watch estável no Windows
+      CHOKIDAR_USEPOLLING: "true"
 
 networks:
   ets-sistema-network:
